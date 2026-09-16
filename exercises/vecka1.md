@@ -1,103 +1,98 @@
-# Vecka 1 – Kapitel 1: Introduktion till maskininlärning (svar)
+# Vecka 1 – Kapitel 1: Introduktion till maskininlärning
 
 ## Faktafrågor
 
-**1. Hur hänger AI, ML och DL ihop?**
-De är tre nästlade nivåer, som ringar inuti varandra.
-- **AI (artificiell intelligens)** är det bredaste begreppet: allt som får datorer att lösa uppgifter som normalt kräver mänsklig intelligens (kan vara handkodade regler).
-- **ML (maskininlärning)** är en delmängd av AI där systemet lär sig mönster ur data i stället för att programmeras med explicita regler.
-- **DL (djupinlärning)** är en delmängd av ML som använder djupa neurala nätverk (många lager) och är särskilt starkt på ostrukturerad data som bild, ljud och text.
+### 1. Hur hänger AI, ML och DL ihop?
 
-Alltså: **DL ⊂ ML ⊂ AI**.
+Tre nivåer inuti varandra: **DL ⊂ ML ⊂ AI**.
+- **AI** – bredast: allt som får datorer att lösa uppgifter som kräver intelligens (även handkodade regler).
+- **ML** – lär sig mönster ur data i stället för regler.
+- **DL** – ML med djupa neurala nät. Starkt på bild, ljud och text.
 
-**2. Vilka är de fyra problemkategorierna inom ML?**
-1. **Övervakad inlärning** (*supervised*) – vi har facit (etiketter `y`). Ex. regression och klassificering.
-2. **Oövervakad inlärning** (*unsupervised*) – inget facit, hitta struktur själv. Ex. klustring, dimensionsreducering.
-3. **Semi-övervakad inlärning** – en liten del av datan är etiketterad, resten inte.
-4. **Förstärkningsinlärning** (*reinforcement learning*) – en agent lär sig genom att agera i en miljö och få belöning/straff.
+### 2. De fyra problemkategorierna inom ML?
 
-**3. Förklara följande:**
+1. **Övervakad** – vi har facit (`y`). Ex: regression, klassificering.
+2. **Oövervakad** – inget facit, hitta struktur själv. Ex: klustring.
+3. **Semi-övervakad** – en liten del är etiketterad, resten inte.
+4. **Förstärkning** – en agent lär sig via belöning/straff i en miljö.
 
-**a) Syftet med att dela upp i tränings-, validerings- och testdata.**
-- **Träningsdata** – modellen lär sig (anpassar sina parametrar) på denna.
-- **Valideringsdata** – används för att välja modell och trimma hyperparametrar utan att titta på testdatan.
-- **Testdata** – rörs *inte* under utvecklingen; används en enda gång på slutet för en ärlig uppskattning av hur modellen presterar på ny, osedd data. Delningen skyddar mot att man luras av överanpassning.
+### 3. Förklara följande:
 
-**b) Vad är k-delad korsvalidering?**
-Man delar träningsdatan i *k* lika stora delar (*folds*). Modellen tränas *k* gånger; varje gång används en fold som valideringsset och de övriga *k*−1 till träning. Resultatet medelvärdesbildas. Ger en stabilare prestandauppskattning än ett enda train/val-split och utnyttjar all data.
+**a) Tränings-, validerings- och testdata.**
+- **Träning** – modellen lär sig här.
+- **Validering** – väljer modell och trimmar hyperparametrar.
+- **Test** – rörs inte förrän på slutet; ger en ärlig siffra på ny data. Skyddar mot att luras av överanpassning.
 
-**c) Vad är RMSE?**
-*Root Mean Squared Error* = roten ur medelvärdet av de kvadrerade felen:
-$$\text{RMSE} = \sqrt{\tfrac{1}{n}\sum (y_i - \hat{y}_i)^2}$$
-Det är genomsnittsfelet i samma enhet som `y` (t.ex. kronor). Kvadreringen gör att stora fel straffas hårdare.
+**b) K-delad korsvalidering.**
+Dela träningsdatan i *k* delar. Träna *k* gånger, varje gång med en del som validering och resten som träning. Medelvärdera. Stabilare än ett enda split och utnyttjar all data.
 
-**d) Hyperparameter vs parameter.**
-- **Parameter** – lärs av modellen under träning ur datan (t.ex. koefficienterna/vikterna i linjär regression).
-- **Hyperparameter** – sätts av dig *innan* träning och styr hur inlärningen går till (t.ex. `max_depth` för ett träd, `alpha` för Ridge). Modellen lär sig inte dessa själv.
+**c) RMSE.**
+Roten ur medelvärdet av de kvadrerade felen. Snittfel i samma enhet som `y`, straffar stora fel hårdare.
+
+**d) Parameter vs hyperparameter.**
+- **Parameter** – lärs av modellen ur datan (t.ex. vikterna i linjär regression).
+- **Hyperparameter** – sätts av dig innan träning (t.ex. `max_depth`, `alpha`).
 
 **e) Grid search + `refit=True`.**
-*Grid search* provar systematiskt alla kombinationer i ett rutnät ("**grid**") av hyperparametervärden och "**söker**" igenom dem för att hitta den bästa kombinationen (mätt med korsvalidering). Namnet: varje axel i rutnätet är en hyperparameter, varje skärningspunkt en kombination som testas.
-`refit=True` (standard) innebär att `GridSearchCV`, efter att bästa kombinationen hittats, automatiskt **tränar om** en slutmodell på *hela* träningsdatan med de bästa hyperparametrarna. Då kan man direkt använda det anpassade objektet för `.predict()`.
+Grid search provar alla kombinationer i ett rutnät ("grid") av hyperparametrar och söker fram den bästa (via korsvalidering). `refit=True` tränar om en slutmodell på hela träningsdatan med de bästa värdena, så den går att `.predict()` direkt.
 
-**f) Kategorisk data och hantering.**
-Kategorisk data är variabler med diskreta kategorier snarare än tal.
-- **Nominal data** – kategorier *utan* rangordning (t.ex. `färg`: röd/grön/blå).
-- **Ordinal data** – kategorier *med* naturlig ordning (t.ex. `betyg`: låg/medel/hög).
-- **One-hot-encoding** – skapar en 0/1-kolumn per kategori. Lämpligt för nominal data (ingen falsk ordning införs).
-- **Dummy-variable-encoding** – som one-hot men man släpper en kategori (`drop_first=True`) → *k*−1 kolumner, undviker perfekt kollinearitet.
-- **Ordinal encoding** – mappar kategorier till heltal (0,1,2…). Lämpligt för ordinal data där ordningen är meningsfull.
+**f) Kategorisk data.**
+Variabler med kategorier i stället för tal.
+- **Nominal** – ingen ordning (röd/grön/blå).
+- **Ordinal** – naturlig ordning (låg/medel/hög).
+- **One-hot** – en 0/1-kolumn per kategori. För nominal data.
+- **Dummy** – som one-hot men släpp en kolumn (`drop_first=True`) → undviker kollinearitet.
+- **Ordinal encoding** – kategori → heltal (0,1,2…). För ordinal data.
 
-**g) Vad är feature engineering?**
-Att skapa, omvandla eller välja ut variabler (*features*) för att modellen ska prestera bättre – t.ex. kombinera kolumner, skapa kvoter, extrahera år ur ett datum, logaritmera skeva variabler, encoda kategorier. Ofta det som avgör hur bra en modell blir.
+**g) Feature engineering.**
+Skapa, omvandla eller välja variabler så modellen blir bättre – t.ex. kvoter, år ur datum, logaritmera skeva variabler, encoda kategorier.
 
-**h) Vad menas med *principle of parsimony*?**
-Sparsamhetsprincipen (Occams rakkniv): av två modeller som förklarar data lika bra, föredra den enklare. Enklare modeller generaliserar oftast bättre och är lättare att tolka.
+**h) Principle of parsimony.**
+Occams rakkniv: av två lika bra modeller, välj den enklare. Den generaliserar oftast bättre.
 
-**4. Vad menas med att "en modell är en förenkling av verkligheten"?**
-En modell fångar bara de viktigaste sambanden, inte varje detalj. Verkligheten är för komplex och brusig för att beskrivas exakt; modellen är en användbar approximation. "Alla modeller är fel, men vissa är användbara."
+### 4. "En modell är en förenkling av verkligheten"?
 
-**5. Vad menas med att en modell är överanpassad (*overfitted*)?**
-Modellen har lärt sig träningsdatan för väl – inklusive brus och slumpmässiga särdrag – i stället för de generella mönstren. Kännetecken: mycket lågt fel på träningsdatan men högt fel på testdatan. Den generaliserar dåligt till ny data.
+Modellen fångar de viktigaste sambanden, inte varje detalj. Verkligheten är för komplex – modellen är en användbar approximation. "Alla modeller är fel, men vissa är användbara."
 
-**6. Högre är bättre i scikit-learn scoring – vad innebär det?**
-scikit-learns `scoring`-API är byggt så att ett *högre* värde alltid betyder en *bättre* modell. Det gör att samma maskineri (t.ex. `GridSearchCV`) kan optimera på alla mått genom att maximera. För felmått (där lägre är bättre) negeras därför värdet, se fråga 9.
+### 5. Vad betyder "överanpassad" (overfitted)?
 
-**7. Tvärsnittsdata, tidsseriedata och paneldata.**
-- **Tvärsnittsdata** – många enheter vid *en* tidpunkt (t.ex. 500 diamanter mätta idag).
-- **Tidsseriedata** – *en* enhet över *flera* tidpunkter (t.ex. en akties dagliga slutkurs under ett år).
-- **Paneldata** – *flera* enheter över *flera* tidpunkter (t.ex. BNP för 10 länder under 20 år).
+Modellen har lärt sig träningsdatan för väl, inklusive bruset. Lågt fel på träning men högt på test → generaliserar dåligt.
+
+### 6. "Högre är bättre" i scikit-learn scoring?
+
+`scoring`-API:t är byggt så att högre värde = bättre modell. Då kan t.ex. `GridSearchCV` alltid maximera. För felmått (där lägre är bättre) negeras värdet, se fråga 9.
+
+### 7. Tvärsnitts-, tidsserie- och paneldata?
+
+- **Tvärsnitt** – många enheter vid en tidpunkt (500 diamanter idag).
+- **Tidsserie** – en enhet över flera tidpunkter (en akties kurs under ett år).
+- **Panel** – flera enheter över flera tidpunkter (BNP för 10 länder i 20 år).
 
 ## Resonemangfrågor
 
-**8. Verkliga tillämpningsområden inom ML.**
-- Rekommendationssystem (Netflix, Spotify, e-handel).
-- Bildigenkänning (medicinsk diagnostik, ansiktsigenkänning, självkörande bilar).
-- Bedrägeridetektering och kreditriskbedömning inom bank/finans.
-- Prisprediktion (bostäder, försäkring, dynamisk prissättning).
-- Språkmodeller och chattbottar, maskinöversättning.
-- Prediktivt underhåll i industrin, efterfrågeprognoser i logistik.
+### 8. Exempel på verkliga ML-tillämpningar.
 
-**9. Logiken bakom "negative" mean squared error.**
-MSE är ett *felmått* där lägre är bättre. Men scikit-learns konvention är att högre score alltid är bättre. För att båda ska stämma negeras MSE: `neg_mean_squared_error`. Då blir t.ex. −10 bättre än −25, dvs. att *maximera* den negativa MSE:n är samma sak som att *minimera* MSE. Så slipper man specialfall i optimeringsrutinerna.
+- Rekommendationer (Netflix, Spotify).
+- Bildigenkänning (diagnostik, självkörande bilar).
+- Bedrägeri- och kreditriskbedömning.
+- Prisprediktion (bostäder, försäkring).
+- Språkmodeller, översättning, chattbottar.
+- Prediktivt underhåll och efterfrågeprognoser.
+
+### 9. Varför "negative" mean squared error?
+
+MSE är ett felmått där lägre är bättre, men scikit-learn vill att högre är bättre. Därför negeras det: `neg_mean_squared_error`. Att maximera −MSE är samma sak som att minimera MSE. Slipper specialfall i optimeringen.
 
 ## Koduppgifter
 
-**10.** (Genomgång/avskrift av kapitlets kodexempel – görs i notebook, inget enskilt svar.)
+### 10. Avskrift av kapitlets kodexempel.
 
-**11. Varför ger `test_size=0.2` följt av `test_size=0.25` proportionerna 60-20-20?**
+Görs i notebooken.
 
-```python
-# Steg 1: 20 % blir test, 80 % blir "full träning"
-X_train_full, X_test, y_train_full, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42)
+### 11. Varför ger `test_size=0.2` sedan `0.25` proportionerna 60-20-20?
 
-# Steg 2: 25 % av de återstående 80 % blir validering
-X_train, X_val, y_train, y_val = train_test_split(
-    X_train_full, y_train_full, test_size=0.25, random_state=42)
-```
+- Steg 1: `0.2` → **test = 20 %**, kvar = 80 %.
+- Steg 2: `0.25` räknas på de 80 % → `0.25 × 80 = 20 %` → **validering = 20 %**.
+- Kvar: `80 − 20 = 60 %` → **träning = 60 %**.
 
-- Efter steg 1: **test = 20 %**, kvar = 80 % av allt.
-- I steg 2 tas 25 % av dessa 80 %: `0.25 × 80 % = 20 %` → **validering = 20 %**.
-- Kvar blir `80 % − 20 % = 60 %` → **träning = 60 %**.
-
-Nyckeln: `test_size=0.25` i andra anropet räknas på den *redan minskade* mängden (80 %), inte på hela datan. Därför 0,25 och inte 0,20 för att få jämna 20 %.
+Nyckeln: andra anropet räknar på de återstående 80 %, inte på hela datan.
